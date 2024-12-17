@@ -3,11 +3,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from profiles_api import serializers
 from rest_framework.authentication import TokenAuthentication
+from rest_framework import filters
 
 from rest_framework import status                #error cpde to returm
 from rest_framework import viewsets
 from profiles_api import models
 from profiles_api import permissions
+
 
 
 # Create your views here.
@@ -108,6 +110,8 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = models.User_profile.objects.all()
     authentication_classes = (TokenAuthentication,)
     permission_classes = (permissions.UpdateOwnProfile,)
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name', 'email',)
 
     def get_serializer_class(self):
         return serializers.UserProfileSerializer
