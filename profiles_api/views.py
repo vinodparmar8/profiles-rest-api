@@ -2,8 +2,12 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from profiles_api import serializers
+from rest_framework.authentication import TokenAuthentication
+
 from rest_framework import status                #error cpde to returm
 from rest_framework import viewsets
+from profiles_api import models
+from profiles_api import permissions
 
 
 # Create your views here.
@@ -51,19 +55,6 @@ class HelloApiView(APIView):
         return Response({'method': 'DELETE'})
 
 
-#
-# class HelloViewSet(viewsets.ViewSet):
-#     """Test API ViewSet"""
-#
-#     def list(self, request):
-#         """return hello messgae"""
-#         a_viewset = [
-#         "Uses action (list, update, partial update, create retrive)",
-#         "Autoamyically map URL using router",
-#         "provide more functionallity with less code"
-#         ]
-#         return Response({'message': 'Hello', 'a_viewset': a_viewset})
-
 
 class HelloViewSet(viewsets.ViewSet):
     """Test API ViewSet"""
@@ -97,23 +88,6 @@ class HelloViewSet(viewsets.ViewSet):
     def retrieve(self, request, pk=None):
         """handle getting new object by IDs"""
         return Response({'http_method': 'GET'})
-    #
-    # def update(self, request, pk=None):
-    #     """handle updating an object"""
-    #     return Response({'http_method': 'PUT'})
-    #
-    # def partial_update(self,  request, pk=None):
-    #     """handle partial updating an object"""
-    #     return Response({'http_method': 'PATCH'})
-    #
-    # def destroy(self, request, pk=None):
-    #     """handle deleting an object"""
-    #     return Response({'http_method': 'DELETE'})
-
-
-    # def retrieve(self, request, pk=None):
-    #     """Handle getting an object by its ID"""
-    #     return Response({'http_method': 'GET'})
 
     def update(self, request, pk=None):
         """Handle updating an object"""
@@ -126,3 +100,14 @@ class HelloViewSet(viewsets.ViewSet):
     def destroy(self, request, pk=None):
         """Handle removing an object"""
         return Response({'http_method': 'DELETE'})
+
+
+class UserProfileViewSet(viewsets.ModelViewSet):
+    """ Create and updating user profile"""
+    serialize_class = serializers.UserProfileSerializer
+    queryset = models.User_profile.objects.all()
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (permissions.UpdateOwnProfile,)
+
+    def get_serializer_class(self):
+        return serializers.UserProfileSerializer
